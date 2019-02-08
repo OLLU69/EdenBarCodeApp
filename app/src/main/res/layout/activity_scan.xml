@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:showIn="@layout/activity_scan"
+        tools:context=".ui.ScanActivity">
+    <SurfaceView
+            android:id="@+id/barcode_surface"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    <View
+            android:id="@+id/top_scan_mask"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/scan_frame"/>
+    <View
+            android:id="@+id/bottom_scan_mask"
+            android:layout_gravity="bottom"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/scan_frame"
+    />
+</FrameLayout>

@@ -1,0 +1,4 @@
+<paths>
+    <!--<files-path path="images/" name="myimages" />-->
+    <external-path path="./" name="imageDB"/>
+</paths>

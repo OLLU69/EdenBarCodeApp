@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <import type="android.view.View"/>
+        <variable name="vm" type="com.eden.edenbarcode.ui.MainViewModel"/>
+    </data>
+    <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black"
+            tools:context=".ui.MainFragment">
+
+        <android.support.v7.widget.RecyclerView
+                android:id="@+id/products_list"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+        <LinearLayout
+                android:id="@+id/link_menu"
+                android:visibility="@{vm.link_menu_visibility ? View.VISIBLE: View.GONE}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@android:color/white"
+                app:layout_constraintTop_toBottomOf="@id/products_list"
+                app:layout_constraintBottom_toBottomOf="parent">
+            <TextView
+                    android:id="@+id/info_text"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@{vm.info_text}"
+                    tools:text="Выберите товар"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            <TextView
+                    android:id="@+id/barcode_label"
+                    android:layout_gravity="center_horizontal"
+                    tools:text="@{vm.barcode_label_text}"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:visibility="@{vm.barcode_label_visibility ? View.VISIBLE: View.GONE}"
+                    tools:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            <Button
+                    android:id="@+id/cancel_bt"
+                    android:layout_marginLeft="@dimen/button_side_margin"
+                    android:layout_marginRight="@dimen/button_side_margin"
+                    android:layout_marginBottom="@dimen/button_side_margin"
+                    android:visibility="@{vm.cancel_bt_visibility ? View.VISIBLE: View.GONE}"
+                    tools:visibility="gone"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{vm::onCancelClick}"
+                    android:text="@string/cancel"/>
+            <LinearLayout
+                    android:id="@+id/confirm_bt_group"
+                    android:layout_marginLeft="@dimen/button_side_margin"
+                    android:layout_marginRight="@dimen/button_side_margin"
+                    android:layout_marginBottom="@dimen/button_side_margin"
+                    android:layout_width="match_parent"
+                    android:visibility="@{vm.confirm_bt_group_visibility ? View.VISIBLE: View.GONE}"
+                    android:layout_height="wrap_content">
+                <Button
+                        android:id="@+id/ok_bt"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="@{vm::onOkBtClick}"
+                        android:text="@string/ok"/>
+                <Space android:layout_width="0dp"
+                       android:layout_height="wrap_content"
+                       android:layout_weight="1"/>
+                <Button
+                        android:id="@+id/cancel_bt_2"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:onClick="@{vm::onCancel2Click}"
+                        android:text="@string/cancel"/>
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>
