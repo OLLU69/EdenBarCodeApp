@@ -6,10 +6,7 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.databinding.DataBindingUtil
-import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.graphics.Point
-import android.graphics.Rect
+import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.media.ThumbnailUtils
 import android.net.Uri
@@ -97,8 +94,8 @@ class MainFragment : Fragment() {
                     getPhotoURI()?.also { pair ->
                         putExtra(MediaStore.EXTRA_OUTPUT, pair.first)
                         activity?.intent?.putExtra("path", pair.second)
-                        startActivityForResult(this, TAKE_PHOTO_REQUEST)
                     }
+                    startActivityForResult(this, TAKE_PHOTO_REQUEST)
                 }
                 true
             }
@@ -114,7 +111,10 @@ class MainFragment : Fragment() {
                 setBarcode(data?.getStringExtra("barcode") ?: return)
             }
             TAKE_PHOTO_REQUEST -> {
-                //            val imageBitmap = data.extras.get("data") as Bitmap
+                (data?.extras?.get("data") as? Bitmap)?.also { bitmap ->
+                    viewModel.addNewBitmap("", bitmap)
+                    return
+                }
                 val path = activity?.intent?.getStringExtra("path") ?: return
                 val bitmap = BitmapFactory.decodeFile(path)
                 val thumbnail = ThumbnailUtils.extractThumbnail(bitmap, 100, 100)
@@ -124,16 +124,15 @@ class MainFragment : Fragment() {
     }
 
     private fun getPhotoURI(): Pair<Uri?, String?>? {
-        context ?: return null
         return try {
-            createImageFile()?.let { file ->
+            getImageFile()?.run {
                 Pair(
                     FileProvider.getUriForFile(
-                        context!!,
+                        context ?: return null,
                         "com.eden.edenbarcode.fileprovider",
-                        file
+                        this
                     ),
-                    file.absolutePath
+                    absolutePath
                 )
             }
         } catch (ex: IOException) {
@@ -141,11 +140,15 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun createImageFile(): File? {
+    private fun getImageFile(): File? {
         // Create an image file name
-        val storageDir = context?.getExternalFilesDir(null) ?: return null
-        if (!storageDir.exists()) return null
-        return File(storageDir, "JPEG_${System.currentTimeMillis()}.jpg")
+        context?.getExternalFilesDir(null)
+            ?.takeIf { it.exists() }
+            ?.apply { return File(this, "JPEG_${System.currentTimeMillis()}.jpg") }
+
+        return context?.filesDir
+            ?.takeIf { it.exists() }
+            ?.let { File(it, "JPEG_${System.currentTimeMillis()}.jpg") }
     }
 
     private fun getGeometry(): Point {
