@@ -1,5 +1,6 @@
 package com.eden.edenbarcode.repository
 
+import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.*
 import android.content.Context
 import javax.inject.Inject
@@ -10,7 +11,7 @@ import javax.inject.Singleton
  * Created by Лукащук Олег(oleg) on 07.02.19.
  */
 interface Repository {
-    fun getProducts(): List<Products>
+    fun getProducts(): LiveData<List<Products>>
     fun setProduct(product: Products): Long?
 }
 
@@ -23,7 +24,7 @@ class RoomRepository @Inject constructor(val context: Context) : Repository {
         .allowMainThreadQueries()
         .build()
 
-    override fun getProducts(): List<Products> {
+    override fun getProducts(): LiveData<List<Products>> {
         return db.productDao.getProducts()
     }
 
@@ -40,7 +41,7 @@ abstract class ProductsDB : RoomDatabase() {
 @Dao
 interface ProductsDao {
     @Query("SELECT * FROM Products")
-    fun getProducts(): List<Products>
+    fun getProducts(): LiveData<List<Products>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun setProduct(product: Products): Long?

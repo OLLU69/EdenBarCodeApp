@@ -1,7 +1,7 @@
 package com.eden.edenbarcode.ui
 
 import android.annotation.SuppressLint
-import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.ViewModel
 import android.content.Context
 import android.databinding.ObservableBoolean
@@ -14,11 +14,11 @@ import com.eden.edenbarcode.R
 import com.eden.edenbarcode.model.EdenModel
 import com.eden.edenbarcode.model.Product
 import com.eden.edenbarcode.qr.BarcodeRecognizer
+import com.eden.edenbarcode.repository.Products
 import javax.inject.Inject
 
 @Suppress("PropertyName")
 class MainViewModel : ViewModel() {
-    val products: MutableLiveData<List<Product>> = MutableLiveData()
     val info_text = ObservableField<String>()
     var barcode_label_text = ObservableField<String>()
     var barcode_label_visibility = ObservableBoolean(false)
@@ -42,13 +42,19 @@ class MainViewModel : ViewModel() {
     }
 
     fun init() {
-        products.value = model.getProducts()
         setShowProductMode()
     }
 
+    fun getLiveProducts(): LiveData<List<Products>> {
+        return model.getLiveProducts()
+    }
+
+    fun getProducts(products: List<Products>): List<Product> {
+        return model.getProducts(products)
+    }
+
     fun onBarCode(barcode: String?) {
-        barcode ?: return
-        setLinkProductMode(barcode)
+        setLinkProductMode(barcode ?: return)
     }
 
     private fun setShowProductMode() {
@@ -81,7 +87,6 @@ class MainViewModel : ViewModel() {
         onOkBt = {
             product.code = barcode
             model.setProduct(product)
-            products.value = products.value
             setShowProductMode()
         }
         confirm_bt_group_visibility.set(true)
@@ -148,6 +153,5 @@ class MainViewModel : ViewModel() {
             imagePath = bitmapPath
             image = thumbnail
         })
-        products.value = model.getProducts()
     }
 }

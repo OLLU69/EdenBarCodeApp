@@ -42,7 +42,6 @@ private const val TAKE_PHOTO_REQUEST = 101
 class MainFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
     private val columns = 3
-    private var products: List<Product> = emptyList()
     private lateinit var binding: MainFragmentBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,10 +62,10 @@ class MainFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
         binding.vm = viewModel
-        viewModel.products.observe(this, Observer { productList ->
-            productList?.also {
-                products = it
-                products_list.adapter = ProductAdapter(this, it, columns)
+        viewModel.getLiveProducts().observe(this, Observer { productList ->
+            productList?.also { dbProducts ->
+                val products = viewModel.getProducts(dbProducts)
+                products_list.adapter = ProductAdapter(this, products, columns)
             }
         })
         viewModel.init()

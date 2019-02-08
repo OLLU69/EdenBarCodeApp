@@ -1,5 +1,6 @@
 package com.eden.edenbarcode.model
 
+import android.arch.lifecycle.LiveData
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -10,29 +11,43 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 interface EdenModel {
-    fun getProducts(): List<Product>
+    fun getProducts(dbProducts: List<Products>?): List<Product>
     fun setProduct(product: Product): Long?
+    fun getLiveProducts(): LiveData<List<Products>>
 }
 
 class RoomEdenModel @Inject constructor(val context: Context) : EdenModel {
     @Inject
     lateinit var repository: Repository
 
-    override fun getProducts(): List<Product> {
-        return repository.getProducts().ifEmpty {
-            val random = Random(seed = 12376768)
-            images.forEach { imagePath ->
-                Products().apply {
-                    code = "${random.nextInt(100000, 1000000)}"
-                    imageData = context.resources.assets.open(imagePath).readBytes()
-                    repository.setProduct(this)
-                }
-            }
-            repository.getProducts()
-        }.map { products ->
-            Product(products)
+    override fun getLiveProducts(): LiveData<List<Products>> {
+        return repository.getProducts().apply {
+            populateTable(this.value ?: return@apply)
         }
     }
+
+    private fun populateTable(products: List<Products>) {
+        products.ifEmpty {
+            val liveDataProducts = repository.getProducts()
+            liveDataProducts.value?.ifEmpty {
+                val random = Random(seed = 12376768)
+                images.forEach { imagePath ->
+                    Products().apply {
+                        code = "${random.nextInt(100000, 1000000)}"
+                        imageData = context.resources.assets.open(imagePath).readBytes()
+                        repository.setProduct(this)
+                    }
+                }
+            }
+        }
+    }
+
+    override fun getProducts(dbProducts: List<Products>?): List<Product> {
+        return dbProducts?.map { products ->
+            Product(products)
+        } ?: emptyList()
+    }
+
 
     override fun setProduct(product: Product): Long? {
         val id = repository.setProduct(Products().apply {
