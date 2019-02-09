@@ -20,7 +20,7 @@
                 android:layout_weight="1"/>
         <LinearLayout
                 android:id="@+id/link_menu"
-                android:visibility="@{vm.link_menu_visibility ? View.VISIBLE: View.GONE}"
+                android:visibility="@{vm.linkMenuVisibility ? View.VISIBLE: View.GONE}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -30,7 +30,7 @@
             <TextView
                     android:id="@+id/info_text"
                     android:layout_gravity="center_horizontal"
-                    android:text="@{vm.info_text}"
+                    android:text="@{vm.infoText}"
                     tools:text="Выберите товар"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="10dp"
@@ -40,13 +40,13 @@
             <TextView
                     android:id="@+id/barcode_label"
                     android:layout_gravity="center_horizontal"
-                    tools:text="@{vm.barcode_label_text}"
+                    tools:text="@{vm.barcodeLabelText}"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@android:color/black"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
-                    android:visibility="@{vm.barcode_label_visibility ? View.VISIBLE: View.GONE}"
+                    android:visibility="@{vm.barcodeLabelVisibility ? View.VISIBLE: View.GONE}"
                     tools:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -56,7 +56,7 @@
                     android:layout_marginLeft="@dimen/button_side_margin"
                     android:layout_marginRight="@dimen/button_side_margin"
                     android:layout_marginBottom="@dimen/button_side_margin"
-                    android:visibility="@{vm.cancel_bt_visibility ? View.VISIBLE: View.GONE}"
+                    android:visibility="@{vm.cancelBtVisibility ? View.VISIBLE: View.GONE}"
                     tools:visibility="gone"
                     android:layout_gravity="center_horizontal"
                     android:layout_width="wrap_content"
@@ -69,7 +69,7 @@
                     android:layout_marginRight="@dimen/button_side_margin"
                     android:layout_marginBottom="@dimen/button_side_margin"
                     android:layout_width="match_parent"
-                    android:visibility="@{vm.confirm_bt_group_visibility ? View.VISIBLE: View.GONE}"
+                    android:visibility="@{vm.confirmBtGroupVisibility ? View.VISIBLE: View.GONE}"
                     android:layout_height="wrap_content">
                 <Button
                         android:id="@+id/ok_bt"

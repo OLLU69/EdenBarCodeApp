@@ -19,12 +19,12 @@ import javax.inject.Inject
 @Suppress("PropertyName")
 class MainViewModel : ViewModel() {
     val products: MutableLiveData<List<Product>> = MutableLiveData()
-    val info_text = ObservableField<String>()
-    var barcode_label_text = ObservableField<String>()
-    var barcode_label_visibility = ObservableBoolean(false)
-    val cancel_bt_visibility = ObservableBoolean(false)
-    val confirm_bt_group_visibility = ObservableBoolean(false)
-    val link_menu_visibility = ObservableBoolean(false)
+    val infoText = ObservableField<String>()
+    var barcodeLabelText = ObservableField<String>()
+    var barcodeLabelVisibility = ObservableBoolean(false)
+    val cancelBtVisibility = ObservableBoolean(false)
+    val confirmBtGroupVisibility = ObservableBoolean(false)
+    val linkMenuVisibility = ObservableBoolean(false)
     var productSelected: (product: Product) -> Unit = {}
     private var onCancelBt: ((View) -> Unit) = {}
     private var onCancelBt2: ((View) -> Unit) = {}
@@ -57,14 +57,14 @@ class MainViewModel : ViewModel() {
 
     private fun setLinkProductMode(barcode: String) {
         clearMode()
-        info_text.set(context.resources.getText(R.string.select_cog_request).toString())
-        barcode_label_text.set(barcode)
-        barcode_label_visibility.set(true)
-        link_menu_visibility.set(true)
+        infoText.set(context.resources.getText(R.string.select_cog_request).toString())
+        barcodeLabelText.set(barcode)
+        barcodeLabelVisibility.set(true)
+        linkMenuVisibility.set(true)
         onCancelBt = {
             setShowProductMode()
         }
-        cancel_bt_visibility.set(true)
+        cancelBtVisibility.set(true)
         productSelected = { product ->
             setConfirmProductMode(product, barcode)
         }
@@ -72,9 +72,9 @@ class MainViewModel : ViewModel() {
 
     private fun setConfirmProductMode(product: Product, barcode: String) {
         clearMode()
-        info_text.set(textOf(R.string.confirm_cog_request))
-        barcode_label_text.set(barcode)
-        barcode_label_visibility.set(true)
+        infoText.set(textOf(R.string.confirm_cog_request))
+        barcodeLabelText.set(barcode)
+        barcodeLabelVisibility.set(true)
         onCancelBt2 = {
             setShowProductMode()
         }
@@ -84,16 +84,16 @@ class MainViewModel : ViewModel() {
             products.value = products.value
             setShowProductMode()
         }
-        confirm_bt_group_visibility.set(true)
-        link_menu_visibility.set(true)
+        confirmBtGroupVisibility.set(true)
+        linkMenuVisibility.set(true)
     }
 
     private fun selectProductForQRCodeMode(
         onCodeSelected: (String?) -> Unit
     ) {
         clearMode()
-        info_text.set(textOf(R.string.select_product))
-        cancel_bt_visibility.set(true)
+        infoText.set(textOf(R.string.select_product))
+        cancelBtVisibility.set(true)
         onCancelBt = {
             setShowProductMode()
         }
@@ -101,14 +101,14 @@ class MainViewModel : ViewModel() {
             clearMode()
             onCodeSelected(product.code)
         }
-        link_menu_visibility.set(true)
+        linkMenuVisibility.set(true)
     }
 
     private fun clearMode() {
-        barcode_label_visibility.set(false)
-        cancel_bt_visibility.set(false)
-        confirm_bt_group_visibility.set(false)
-        link_menu_visibility.set(false)
+        barcodeLabelVisibility.set(false)
+        cancelBtVisibility.set(false)
+        confirmBtGroupVisibility.set(false)
+        linkMenuVisibility.set(false)
         onCancelBt = {}
         onCancelBt2 = {}
         onOkBt = {}

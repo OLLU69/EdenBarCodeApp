@@ -34,7 +34,8 @@ interface ICameraWrapper {
     fun close()
 
     /*
-Каллбек для получения сырой картинки с камеры в момент фокусировки (нужен для распознавания баркодов или иных действий с четкой картинкой)
+Каллбек для получения сырой картинки с камеры в момент фокусировки
+(нужен для распознавания баркодов или иных действий с четкой картинкой)
 срабатывает в среднем 1 раз в 2 секунды, при фокусировке камеры на объекте
 для получения одиночной картинки, его можно назначить и после получения картинки скинуть в null
 */
@@ -58,7 +59,8 @@ class CameraWrapper @Inject constructor() : ICameraWrapper {
     private var cameraId = -1
     private var isFrontalCamera = false
     // Калбек internalPreviewCallback выставляется в момент наведения фокуса у камеры (событие onAutoFocus)
-    // При снятии картинки (в onPreviewFrame) он скидывается в Null, чтобы событие onPreview срабатывало только один раз при фокусировке камеры
+    // При снятии картинки (в onPreviewFrame) он скидывается в Null,
+    // чтобы событие onPreview срабатывало только один раз при фокусировке камеры
     private val internalPreviewCallback = Camera.PreviewCallback { data, camera ->
         if (isReady && data.isNotEmpty()) {
             // скидываем внутренний калбек, чтобы он не вызывался постоянно
@@ -68,7 +70,6 @@ class CameraWrapper @Inject constructor() : ICameraWrapper {
             val pictureSize = camera.parameters.previewSize
             val preparedData: ByteArray
             preparedData = if (needRotateImage()) {
-                //TODO: This is to use camera in landScape mode
                 // В случае неправильной ориентации камеры переворачиваем картинку
                 rotatePicture(data, pictureSize)
             } else {
@@ -100,7 +101,8 @@ class CameraWrapper @Inject constructor() : ICameraWrapper {
             // Если камера сфокусировалась
             if (success) {
                 previewCameraCallback?.apply {
-                    // В момент автофокуса камеры навешиваем каллбак с Preview, снимаем в нем сырую картинку и там же обнуляем каллбек
+                    // В момент автофокуса камеры навешиваем каллбак с Preview,
+                    // снимаем в нем сырую картинку и там же обнуляем каллбек
                     camera.setPreviewCallback(internalPreviewCallback)
                 }
                 takePictureCallback?.apply {
@@ -192,7 +194,8 @@ class CameraWrapper @Inject constructor() : ICameraWrapper {
         }
     }
 
-    // Каллбек для получения сырой картинки с камеры в момент фокусировки (нужен для распознавания баркодов или иных действий с четкой картинкой)
+    // Каллбек для получения сырой картинки с камеры в момент фокусировки
+    // (нужен для распознавания баркодов или иных действий с четкой картинкой)
     // срабатывает в среднем 1 раз в 2 секунды, при фокусировке камеры на объекте
     // для получения одиночной картинки, его можно назначить и после получения картинки скинуть в null
     @Synchronized
@@ -311,7 +314,9 @@ class CameraWrapper @Inject constructor() : ICameraWrapper {
             Camera.Parameters.FOCUS_MODE_MACRO
         )
         focusMode?.apply {
-            if (focusMode == Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE || focusMode == Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO) {
+            if (focusMode == Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE
+                || focusMode == Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO
+            ) {
                 focusModeAuto = true
             }
             if (focusMode == parameters.focusMode) {
