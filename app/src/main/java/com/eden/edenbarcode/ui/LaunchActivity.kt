@@ -51,5 +51,4 @@ class LaunchActivity : Activity() {
         fadeOutAnimation.startDelay = ANIMATION_BK_DELAY
         fadeOutAnimation.start()
     }
-
 }

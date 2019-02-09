@@ -35,10 +35,11 @@ import java.io.IOException
 
 private const val SCAN_QR_CODE_REQUEST = 100
 private const val TAKE_PHOTO_REQUEST = 101
+private const val DECORATION_SPACE = 3
+private const val COLUMNS_COUNT = 3
 
 class MainFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
-    private val columns = 3
     private var products: List<Product> = emptyList()
     private lateinit var binding: MainFragmentBinding
     override fun onCreateView(
@@ -52,8 +53,8 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        products_list.layoutManager = GridLayoutManager(context, columns)
-        products_list.addItemDecoration(SpacesItemDecoration(3, columns))
+        products_list.layoutManager = GridLayoutManager(context, COLUMNS_COUNT)
+        products_list.addItemDecoration(SpacesItemDecoration(DECORATION_SPACE, COLUMNS_COUNT))
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -63,7 +64,7 @@ class MainFragment : Fragment() {
         viewModel.products.observe(this, Observer { productList ->
             productList?.also {
                 products = it
-                products_list.adapter = ProductAdapter(this, it, columns)
+                products_list.adapter = ProductAdapter(this, it, COLUMNS_COUNT)
             }
         })
         viewModel.init()

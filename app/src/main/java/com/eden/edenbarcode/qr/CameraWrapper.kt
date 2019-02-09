@@ -19,7 +19,6 @@ import javax.inject.Inject
  * Класс обертка для реализации превью с камеры и работы с камерой
  */
 
-
 // byte[] data содержит сырые данные с камеры (YuvImage)
 typealias PreviewCameraCallback = (data: ByteArray, frameSize: Point) -> Unit
 
@@ -34,12 +33,13 @@ interface ICameraWrapper {
     // закрывает сессию для работы с камерой и освобождает ресурсы
     fun close()
 
-    // Каллбек для получения сырой картинки с камеры в момент фокусировки (нужен для распознавания баркодов или иных действий с четкой картинкой)
-    // срабатывает в среднем 1 раз в 2 секунды, при фокусировке камеры на объекте
-    // для получения одиночной картинки, его можно назначить и после получения картинки скинуть в null
+    /*
+Каллбек для получения сырой картинки с камеры в момент фокусировки (нужен для распознавания баркодов или иных действий с четкой картинкой)
+срабатывает в среднем 1 раз в 2 секунды, при фокусировке камеры на объекте
+для получения одиночной картинки, его можно назначить и после получения картинки скинуть в null
+*/
     fun setPreviewCameraCallback(callback: PreviewCameraCallback?)
 }
-
 
 class CameraWrapper @Inject constructor() : ICameraWrapper {
     private var display: Display? = null
@@ -67,7 +67,8 @@ class CameraWrapper @Inject constructor() : ICameraWrapper {
 
             val pictureSize = camera.parameters.previewSize
             val preparedData: ByteArray
-            preparedData = if (needRotateImage()) {//TODO: This is to use camera in landScape mode
+            preparedData = if (needRotateImage()) {
+                //TODO: This is to use camera in landScape mode
                 // В случае неправильной ориентации камеры переворачиваем картинку
                 rotatePicture(data, pictureSize)
             } else {
@@ -222,12 +223,10 @@ class CameraWrapper @Inject constructor() : ICameraWrapper {
             setCameraDisplayOrientation()
             setCameraParameters()
             createSurface()
-
         } catch (e: Exception) {
             e.printStackTrace()
             // throw new RuntimeException(e); // debug, после отладки надо будет убрать возбуждение ошибки
         }
-
     }
 
     private fun cameraStart(holder: SurfaceHolder) {
@@ -242,7 +241,6 @@ class CameraWrapper @Inject constructor() : ICameraWrapper {
             e.printStackTrace()
             // throw new RuntimeException(e); // debug, после отладки надо будет убрать возбуждение ошибки
         }
-
     }
 
     private fun getCameraId(): Int {
@@ -427,7 +425,6 @@ class CameraWrapper @Inject constructor() : ICameraWrapper {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
     }
 
     private fun needRotateImage(): Boolean {

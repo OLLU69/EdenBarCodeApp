@@ -103,4 +103,3 @@ class BarcodeRecognizer @Inject constructor() : IBarcodeRecognizer {
         }
     }
 }
-

@@ -66,4 +66,3 @@ interface ScannerModule {
     @Binds
     fun getScannerRecognizer(recognizer: BarcodeRecognizer): IBarcodeRecognizer
 }
-
