@@ -2,12 +2,12 @@ package com.eden.edenbarcode.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.databinding.DataBindingUtil
-import android.graphics.*
-import android.graphics.drawable.ColorDrawable
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Point
+import android.graphics.Rect
 import android.media.ThumbnailUtils
 import android.net.Uri
 import android.os.Bundle
@@ -22,13 +22,10 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import com.eden.edenbarcode.R
 import com.eden.edenbarcode.databinding.MainFragmentBinding
 import com.eden.edenbarcode.model.Product
 import kotlinx.android.synthetic.main.main_fragment.*
-import kotlinx.android.synthetic.main.product_item.view.*
 import kotlinx.android.synthetic.main.qr_bar_panel.view.*
 import java.io.File
 import java.io.IOException
@@ -40,8 +37,9 @@ private const val COLUMNS_COUNT = 3
 
 class MainFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
-    private var products: List<Product> = emptyList()
     private lateinit var binding: MainFragmentBinding
+    private lateinit var adapter: ProductAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -59,15 +57,17 @@ class MainFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+        viewModel = viewModel {
+            observe(products, ::renderProduct)
+        }
         binding.vm = viewModel
-        viewModel.products.observe(this, Observer { productList ->
-            productList?.also {
-                products = it
-                products_list.adapter = ProductAdapter(this, it, COLUMNS_COUNT)
-            }
-        })
+        adapter = ProductAdapter(COLUMNS_COUNT) { product -> productSelected(product) }
+        products_list.adapter = adapter
         viewModel.init()
+    }
+
+    private fun renderProduct(productList: List<Product>?) {
+        adapter.products = productList.orEmpty()
     }
 
     @SuppressLint("InflateParams")
@@ -92,9 +92,10 @@ class MainFragment : Fragment() {
             R.id.menu_add_product -> {
                 Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
                     resolveActivity(activity?.packageManager ?: return false)
-                    getPhotoURI()?.also { pair ->
-                        putExtra(MediaStore.EXTRA_OUTPUT, pair.first)
-                        activity?.intent?.putExtra("path", pair.second)
+                    getPhotoURI()?.also { photoData ->
+                        val (extraOutputUrl, path) = photoData
+                        putExtra(MediaStore.EXTRA_OUTPUT, extraOutputUrl)
+                        activity?.intent?.putExtra("path", path)
                     }
                     startActivityForResult(this, TAKE_PHOTO_REQUEST)
                 }
@@ -159,7 +160,7 @@ class MainFragment : Fragment() {
         }
     }
 
-    fun productSelected(product: Product) {
+    private fun productSelected(product: Product) {
         viewModel.productSelected(product)
     }
 
@@ -188,48 +189,3 @@ class SpacesItemDecoration(private val space: Int, private val columns: Int) : R
     }
 }
 
-class ProductAdapter(private val mf: MainFragment, private val products: List<Product>, columns: Int) :
-    RecyclerView.Adapter<ProductHolder>() {
-
-    private val size = products.size + if (products.size % columns == 0) 0 else columns - products.size % columns
-    override fun getItemCount(): Int {
-        return size
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, type: Int): ProductHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.product_item, parent, false)
-        return ProductHolder(mf, view)
-    }
-
-    override fun onBindViewHolder(holder: ProductHolder, position: Int) {
-        if (position < products.size) {
-            holder.setProduct(products[position])
-        } else {
-            holder.clear()
-        }
-    }
-}
-
-class ProductHolder(private val mf: MainFragment, view: View) : RecyclerView.ViewHolder(view) {
-    private val image: ImageView? = view.image
-    private val code: TextView? = view.code
-
-    fun setProduct(product: Product) {
-        image?.setImageBitmap(product.image)
-        code?.text = product.code
-        itemView.setOnClickListener {
-            Log.i("ProductHolder", "onClick")
-            mf.productSelected(product)
-        }
-    }
-
-    fun clear() {
-        code?.text = ""
-        image?.setImageDrawable(dummyDrawable)
-    }
-
-    companion object {
-        private val dummyDrawable = ColorDrawable(Color.WHITE)
-    }
-}
